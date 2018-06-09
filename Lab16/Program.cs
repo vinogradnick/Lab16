@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,12 @@ namespace Lab16
            collection.CollectionProductCountChanged+= new CollectionHandler(journal.CollectionProductCountChanged);
            FoodProduct.DiscountChange+=new Discounter(journal.ProductDiscountChanged);
             collection.Add(new IndustrialProduct("быдых",100,1000,10,DateTime.Now,20));
+            Generator.Generator generator = new Generator.Generator();
+            List< Product > prod= generator.generate();
+            for (int i = 0; i < prod.Count; i++)
+            {
+                collection.Add(prod[i]);
+            }
             while (!Console.CapsLock)
             {
 
@@ -30,7 +37,6 @@ namespace Lab16
                 collection.Work();
                 Console.ReadKey();
                 collection.RemoveOffered();
-                journal.Print();
                 serializator.Serialize(collection,$"{collection.Name}___{DateTime.Now.Day}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}");
             }
 

@@ -7,9 +7,7 @@ namespace Products
     public abstract class Product:IComparable,IComparer
     {
         public string NameProduct;
-        public static int ID => id;
 
-        public static int id = 0;
 
         public string Name { get; set; }
 
@@ -34,7 +32,7 @@ namespace Products
         /// <param name="price"></param>
         protected Product(string name,int price)
         {
-            id++;
+
             Name = name;
             Price = price;
         }
@@ -43,7 +41,6 @@ namespace Products
         /// </summary>
         protected Product()
         {
-            id++;
         }
         public int CompareTo(object obj)
         {
@@ -57,7 +54,7 @@ namespace Products
             return t;
         }
 
-        public override string ToString() => $"ID:{id}\nТип:{this.GetType()}\nНазвание продукта:{Name}\nСтоимость продукта:{Price}\n";
+        public override string ToString() => $"Тип:{this.GetType()}\nНазвание продукта:{Name}\nСтоимость продукта:{Price}\n";
 
         public int Compare(object x, object y)
         {

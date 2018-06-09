@@ -54,6 +54,10 @@
       <Project>{1B7334D6-2E5B-4259-8269-4ACFFACDC402}</Project>
       <Name>CollectionMarket</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Generator\Generator.csproj">
+      <Project>{FAFC758A-B35A-4BAD-8EE0-FF6F5494E6D2}</Project>
+      <Name>Generator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Products\Products.csproj">
       <Project>{9B572C59-04F1-4FAB-BD1E-7E65D456ECFA}</Project>
       <Name>Products</Name>

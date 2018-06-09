@@ -15,9 +15,14 @@ namespace Products
             Length = length;
         }
 
-        public IndustrialProduct() : base()
+        public IndustrialProduct(string v) : base()
         {
 
+        }
+
+        protected IndustrialProduct()
+        {
+            throw new NotImplementedException();
         }
 
         public override string ToString() => base.ToString() + $"Вес продукта:{Weight}\nДлина продукта:{Length}\n";
