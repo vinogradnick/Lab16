@@ -56,7 +56,18 @@ namespace Serializatior
 
         }
 
-     
+        public void SaveJournal(Journal journal)
+        {
+            try
+            {
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
         public void SaveToAccess(string about,MyNewCollection productCollection, Journal journal)
         {
             try
@@ -77,8 +88,10 @@ namespace Serializatior
                     {
                         var item = (FoodProduct) product;
                         string add =
-                            $"INSERT INTO [Products] ( [name_product],[storage_life],[price],[date_production],[discount],[dead] ) VALUES ( '{item.Name}',{item.StorageLife},{(int)item.Price},'{item.DateProduction}',{item.PercentDiscount},{item.ProductLifeIsDead} )";
+                            $"INSERT INTO [Products] ( [name_product],[storage_life],[price],[date_production],[discount],[dead],[market_name] ) VALUES ( '{item.Name}',{item.StorageLife},{(int)item.Price},'{item.DateProduction}',{item.PercentDiscount},{item.ProductLifeIsDead},'{productCollection.Name}')";
+                       
                         command = new OleDbCommand(add, connection);
+
                         command.ExecuteNonQuery();
                     }
                     command.Dispose();
