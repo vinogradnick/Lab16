@@ -23,8 +23,9 @@ namespace Products
 
         public static event Discounter DiscountChange;
         public double PercentDiscount { get; set; }
-        public bool ProductLifeIsDead { get; set; }
-       
+
+        public bool ProductLifeIsDead => StorageLife == 0;
+
         public void OnDiscountChange(DiscountHandler handler)
         {
             DiscountChange?.Invoke(this, handler);
@@ -40,7 +41,6 @@ namespace Products
         {
             if (StorageLife == 0)
             {
-                ProductLifeIsDead = true;
                 return;
             }
             else

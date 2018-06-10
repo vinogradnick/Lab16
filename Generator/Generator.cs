@@ -24,7 +24,7 @@ namespace Generator
         }
         static Random rd = new Random();
 
-        public List<Product> generate()
+        public  static List<Product> generate()
         {
             List<Product> prdProducts=new List<Product>();
             for (int i = 0; i < count; i++)
@@ -40,7 +40,7 @@ namespace Generator
             return prdProducts;
         }
 
-        public string constructionitems()
+        public static string constructionitems()
         {
             string[] temp = new string[]
             {
@@ -59,7 +59,7 @@ namespace Generator
             return temp[rd.Next(temp.Length)];
         }
 
-        public string foodstr()
+        public static string foodstr()
         {
             string[] temp = new string[]
             {
@@ -87,7 +87,7 @@ namespace Generator
             return temp[rd.Next(temp.Length)].Trim();
         }
 
-        public string factory()
+        public static string factory()
         {
             string[] temp = new string[]
             {

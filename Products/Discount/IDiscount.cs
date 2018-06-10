@@ -8,7 +8,7 @@
         /// Процент по скидке
         /// </summary>
         double PercentDiscount { get; set; }
-        bool ProductLifeIsDead { get; set; }
+       
         void OnDiscountChange(DiscountHandler handler);
     }
 }

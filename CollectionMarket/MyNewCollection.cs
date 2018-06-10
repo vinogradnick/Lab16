@@ -73,8 +73,8 @@ namespace CollectionMarket
         {
             try
             {
-                foreach (var item in this)
-                    if (item.isOffed)
+                foreach (FoodProduct item in this)
+                    if (item.ProductLifeIsDead)
                     {
                         OnCollectionProductCountChanged(new CollectionHandlerArgs(this.Name, "Удаление списаного товара", item));
                         this.Remove(item);

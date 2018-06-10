@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using CollectionMarket;
 using Products;
 using Serializatior;
+using Generator;
+
 
 namespace Lab16
 {
@@ -15,34 +17,43 @@ namespace Lab16
         static Serializator serializator = new Serializator();
         private static MyNewCollection collection = new MyNewCollection("Магазин");
         static Journal journal = new Journal();
+        
         static void Main(string[] args)
         {
-           collection.CollectionProductChanged += new CollectionHandler(journal.CollectionProductChanged);
-           collection.DiscountProductIsEnd+=new Discounter(journal.ProductStorageLifeEnd);
-           collection.CollectionProductCountChanged+= new CollectionHandler(journal.CollectionProductCountChanged);
-           FoodProduct.DiscountChange+=new Discounter(journal.ProductDiscountChanged);
-            collection.Add(new IndustrialProduct("быдых",100,1000,10,DateTime.Now,20));
-            Generator.Generator generator = new Generator.Generator();
-            List< Product > prod= generator.generate();
-            for (int i = 0; i < prod.Count; i++)
-            {
-                collection.Add(prod[i]);
-            }
+            includeDependences();
+            fillCollection();
             while (!Console.CapsLock)
             {
-
-
                 collection.Print();
                 Console.WriteLine("Перейти на следующий день час работы");
                 collection.Work();
                 Console.ReadKey();
                 collection.RemoveOffered();
-                serializator.Serialize(collection,$"{collection.Name}___{DateTime.Now.Day}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}");
+                serializator.Serialize(collection,$"{collection.Name}___{DateTime.Now.Day}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}",journal);
             }
 
             Console.ReadKey();
         }
 
+        static void includeDependences()
+        {
+            collection.CollectionProductChanged += new CollectionHandler(journal.CollectionProductChanged);
+            collection.DiscountProductIsEnd += new Discounter(journal.ProductStorageLifeEnd);
+            collection.CollectionProductCountChanged += new CollectionHandler(journal.CollectionProductCountChanged);
+            FoodProduct.DiscountChange += new Discounter(journal.ProductDiscountChanged);
+            collection.Add(new IndustrialProduct("быдых", 100, 1000, 10, DateTime.Now, 20));
+            Generator.Generator generator = new Generator.Generator();
+           
+        }
+
+        static void fillCollection()
+        {
+            List<Product> prod = Generator.Generator.generate();
+            for (int i = 0; i < prod.Count; i++)
+            {
+                collection.Add(prod[i]);
+            }
+        }
         public void Menu()
         {
             
