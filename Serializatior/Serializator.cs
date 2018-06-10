@@ -14,12 +14,30 @@ namespace Serializatior
     public  class Serializator
     {
         public string Path;
-        public static int backups = 1;
+        
         public Serializator()
         {
 
         }
 
+        public void SerializeAllMarkets(List<MyNewCollection> list)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            try
+            {
+
+                FileStream fs = new FileStream($"Market.dat", FileMode.OpenOrCreate);
+                formatter.Serialize(fs,list);
+                fs.Close();
+                fs.Dispose();
+                Backup("Market.dat");
+               
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
         public void Serialize(MyNewCollection collection,string colname,Journal journal)
         {
             BinaryFormatter formatter = new BinaryFormatter();
@@ -32,7 +50,7 @@ namespace Serializatior
                 fs.Dispose();                
                 Backup(colname);
                 SaveToAccess(collection.Name,collection,journal);
-                backups++;
+                collection.backups++;
 
             }
             catch (Exception e)
@@ -48,7 +66,7 @@ namespace Serializatior
             for (int i = 0; i < Console.WindowWidth; i++)
             {
                 Console.Write("|");
-                Thread.Sleep(10);
+                Thread.Sleep(1);
 
             }
             Console.WriteLine();
@@ -60,12 +78,47 @@ namespace Serializatior
         {
             try
             {
+                OleDbConnection connection =
+                    new OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Market.mdb");
+                connection.Open();
+                OleDbCommand command;
+                foreach (var item in journal.JournalList)
+                {
+                    string query =
+                        $"INSERT INTO [ProductMany_p] ([name_market],[type_change],[product]) VALUES ('{item.Name}','{item.TypeChange}','{((FoodProduct)item.ObjectColelction).Name}')";
 
+                    command = new OleDbCommand(query, connection);
+                    command.ExecuteNonQuery();
+                    command.Dispose();
+
+                }
+
+                foreach (var item in journal.JournalEntryProducts)
+                {
+                    string query =
+                        $"INSERT INTO [Discounts] ([name],[discount],[price],[storagelife],[type]) VALUES ('{((FoodProduct)item.Product).Name}','{((FoodProduct)item.Product).PercentDiscount}',{(int)((FoodProduct)item.Product).Price},{((FoodProduct)item.Product).StorageLife},'{item.Message}')";
+
+                    command = new OleDbCommand(query, connection);
+                    command.ExecuteNonQuery();
+                    command.Dispose();
+
+                }
+
+                foreach (var item in journal.DeadProducts)
+                {
+                    string query =
+                        $"INSERT INTO [DeadProducts] ([product_name],[type],[price]) VALUES ('{((FoodProduct)item.Product).Name}',{item.Message},{(int)((FoodProduct)item.Product).Price})";
+
+                    command = new OleDbCommand(query, connection);
+                    command.ExecuteNonQuery();
+                    command.Dispose();
+
+                }
+                connection.Close();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                throw;
             }
         }
         public void SaveToAccess(string about,MyNewCollection productCollection, Journal journal)
@@ -76,10 +129,10 @@ namespace Serializatior
                     new OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Market.mdb");
                 connection.Open();
                 OleDbCommand command;              
-                if (backups ==1)
+                if (productCollection.backups==1)
                 {
                     string query =
-                        $"INSERT INTO [Market] ([market_name],[count_products],[count_backups],[count_offedproducts]) VALUES ('{productCollection.Name}',{productCollection.Count},{backups},{journal.DeadProducts.Count})";
+                        $"INSERT INTO [Market] ([market_name],[count_products],[count_backups],[count_offedproducts]) VALUES ('{productCollection.Name}',{productCollection.Count},{productCollection.backups},{journal.DeadProducts.Count})";
 
                     command = new OleDbCommand(query, connection);
                     command.ExecuteNonQuery();
@@ -99,7 +152,7 @@ namespace Serializatior
                 else
                 {
                     string query =
-                        $"UPDATE Market SET count_backups ={backups},count_products ={productCollection.Count},count_offedproducts ={journal.DeadProducts.Count} WHERE market_name ='{productCollection.Name}'";
+                        $"UPDATE Market SET count_backups ={productCollection.backups},count_products ={productCollection.Count},count_offedproducts ={journal.DeadProducts.Count} WHERE market_name ='{productCollection.Name}'";
                   command =new OleDbCommand(query,connection);
                   command.ExecuteNonQuery();
                     Console.WriteLine("Информация о магазине в базе данных обновлена");
@@ -156,14 +209,14 @@ namespace Serializatior
                 throw;
             }
         }
-        public MyNewCollection Deserializator(string file)
+        public List<MyNewCollection> Deserializator(string file)
         {
             BinaryFormatter formatter = new BinaryFormatter();
 
             try
             {
-                FileStream fs = new FileStream($"{file}.xml", FileMode.OpenOrCreate);
-                MyNewCollection collection = (MyNewCollection)formatter.Deserialize(fs);
+                FileStream fs = new FileStream($"Market.dat", FileMode.OpenOrCreate);
+                List<MyNewCollection> collection = (List<MyNewCollection>)formatter.Deserialize(fs);
                 fs.Close();
                 fs.Dispose();
                 return collection;

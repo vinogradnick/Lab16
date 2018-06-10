@@ -2,6 +2,7 @@
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using CollectionMarket;
@@ -19,7 +20,17 @@ namespace Lab16
        static List<MyNewCollection> list = new List<MyNewCollection>();
         static void Main(string[] args)
         {
-            Markerts();
+           Console.WriteLine("Открыть уже созданые магазины 1-да, 2-нет");
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    list = serializator.Deserializator("Market.dat");
+                    break;
+                case "2":
+                    Markerts();
+                    break;
+
+            }
             foreach (var item in list)
                 includeDependences(item);
 
@@ -37,9 +48,18 @@ namespace Lab16
                     item.RemoveOffered();
                     serializator.Serialize(item, $"{item.Name}___{DateTime.Now.Day}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}", journal);
                 }
+                serializator.SerializeAllMarkets(list);
+                list = serializator.Deserializator("Market.dat");
+                MarkertsRemove();
             }
             Console.WriteLine("День работы был завершнен");
+            Console.ReadKey();
             
+            serializator.SaveJournal(journal);
+            Menu();
+            choise();
+
+            Console.ReadKey();
             Console.ReadKey();
         }
 
@@ -50,6 +70,25 @@ namespace Lab16
                 list.Add(new MyNewCollection(Generator.Generator.gen()));
 
         }
+
+        public static void MarkertsRemove()
+        {
+            Random rd = new Random();
+            try
+            {
+                for (int i = 0; i < 6; i++)
+                for (int j = 0; j < 4; j++)
+                    list[i].Remove(list[i][rd.Next(list[i].Count - 1)]);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Продукты кончились");
+                
+            }
+           
+
+        }
+
         static void includeDependences(MyNewCollection collection)
         {
             collection.CollectionProductChanged += new CollectionHandler(journal.CollectionProductChanged);
@@ -68,16 +107,30 @@ namespace Lab16
                 coll.Add(prod[i]);
             }
         }
-        public void Menu()
+        public static void Menu()
         {
             
             Console.WriteLine("Вас приветствует магазин продуктов");
             Console.WriteLine("1-Выбрать файл с данными за определенные дни");
             Console.WriteLine("2-Посмотреть продукты");
-            Console.WriteLine("3-Выбрать магазин");
+            Console.WriteLine("3-Посмотреть журнал событий");
             Console.WriteLine("4-Выбрать магазин");
             Console.WriteLine("5-Выбрать магазин");
+            
+        }
 
+        public static void choise()
+        {
+            switch (Console.ReadLine())
+            {
+               case "1":
+                   break;
+                case "2":
+                    System.Diagnostics.Process.Start("Market.mdb");
+                    break;
+                case "3":
+                    break;
+            }
         }
     }
     

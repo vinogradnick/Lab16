@@ -68,13 +68,13 @@ namespace CollectionMarket
             /// <summary>
             /// Объект коллекции от которого пришло событие
             /// </summary>
-            public string ObjectColelction;
+            public object ObjectColelction;
 
             public JournalEntry(string name, string change, object obj)
             {
                 Name = name;
                 TypeChange = change;
-                ObjectColelction = obj.ToString();
+                ObjectColelction = obj;
             }
 
             /// <summary>

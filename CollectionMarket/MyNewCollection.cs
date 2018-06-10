@@ -15,7 +15,7 @@ namespace CollectionMarket
         public event CollectionHandler CollectionProductChanged;
         public event Discounter DiscountProductIsEnd;
         public event CollectionHandler CollectionProductCountChanged;
-       
+        public int backups = 1;
         public MyNewCollection(string name):base() => Name = name;
 
         protected virtual void OnCollectionProductChanged(CollectionHandlerArgs args) => CollectionProductChanged?.Invoke(this, args);
