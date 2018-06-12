@@ -20,13 +20,13 @@ namespace Serializatior
 
         }
 
-        public void SerializeAllMarkets(List<MyNewCollection> list)
+        public void SerializeAllMarkets(List<MyNewCollection> list,string path)
         {
             BinaryFormatter formatter = new BinaryFormatter();
             try
             {
 
-                FileStream fs = new FileStream($"Market.dat", FileMode.OpenOrCreate);
+                FileStream fs = new FileStream(path, FileMode.OpenOrCreate);
                 formatter.Serialize(fs,list);
                 fs.Close();
                 fs.Dispose();
@@ -78,6 +78,7 @@ namespace Serializatior
         {
             try
             {
+                StreamWriter writer =new StreamWriter("Журнал.txt");
                 OleDbConnection connection =
                     new OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Market.mdb");
                 connection.Open();
@@ -90,7 +91,7 @@ namespace Serializatior
                     command = new OleDbCommand(query, connection);
                     command.ExecuteNonQuery();
                     command.Dispose();
-
+                    writer.WriteLine(item.ToString());
                 }
 
                 foreach (var item in journal.JournalEntryProducts)
@@ -101,6 +102,8 @@ namespace Serializatior
                     command = new OleDbCommand(query, connection);
                     command.ExecuteNonQuery();
                     command.Dispose();
+                    writer.WriteLine(item.ToString());
+
 
                 }
 
@@ -114,6 +117,8 @@ namespace Serializatior
                     command.Dispose();
 
                 }
+                writer.Close();
+                writer.Dispose();
                 connection.Close();
             }
             catch (Exception e)
@@ -215,7 +220,7 @@ namespace Serializatior
 
             try
             {
-                FileStream fs = new FileStream($"Market.dat", FileMode.OpenOrCreate);
+                FileStream fs = new FileStream(file, FileMode.OpenOrCreate);
                 List<MyNewCollection> collection = (List<MyNewCollection>)formatter.Deserialize(fs);
                 fs.Close();
                 fs.Dispose();
