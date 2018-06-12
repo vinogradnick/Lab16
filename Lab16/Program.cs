@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using CollectionMarket;
 using Products;
@@ -98,7 +99,8 @@ namespace Lab16
                 Console.WriteLine("Завозим продукты в магазин");
                 for (int i = 0; i < Console.WindowWidth; i++)
                 {
-                    Console.Write($"");
+                    Console.Write($"|");
+                    Thread.Sleep(2);
                 }
                 foreach (var item in list)
                     FillCollection(item);
