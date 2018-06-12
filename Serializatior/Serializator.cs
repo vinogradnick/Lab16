@@ -66,7 +66,7 @@ namespace Serializatior
             for (int i = 0; i < Console.WindowWidth; i++)
             {
                 Console.Write("|");
-                Thread.Sleep(1);
+                
 
             }
             Console.WriteLine();

@@ -25,20 +25,28 @@ namespace Lab16
         public static void Game()
         {
             Startmenu();
+            int count = 0;
             bool repeat = false;
             while (!repeat)
             {
-                NextDay();
-                SaveData();
+                Console.Write("Сколько дней вы хотите пропустить :");
+                count = Validator.InputValidator.InputPositive();
+                for (int i = 0; i <= count; i++)
+                {
+                    NextDay();
+                    SaveData();
+                    Console.WriteLine($"День {i}");
+                }
+                serializator.SaveJournal(journal);//Сохранение информации о товаре в журнале
+                Console.Write("Для выхода нажмите <R> ");
                 if (Console.ReadLine() == "R") repeat = true;
             }
-            Console.WriteLine("День работы был завершнен");
-            Console.ReadLine();
+            Console.WriteLine(count+" день работы был завершнен");
 
-            serializator.SaveJournal(journal);//Сохранение информации о товаре в журнале
+            
             Menu();//Вызов меню
             Choise();//Выбор вариантов
-            Console.ReadLine();
+           
 
 
         }
@@ -48,8 +56,19 @@ namespace Lab16
         public static void Markerts()
         {
             Random random = new Random();
-            for (int i = 0; i < random.Next(1,10); i++)
+            for (int i = 0; i < random.Next(10,20); i++)
+            {
                 list.Add(new MyNewCollection(Generator.Generator.gen()));
+            }
+
+            foreach (var item in list)
+                IncludeDependences(item);
+
+
+            foreach (var item in list)
+            {
+                Console.WriteLine($"{item.Name} Количество продуктов:{item.Count}");
+            }
         }
 
         public static void SaveData()
@@ -59,7 +78,6 @@ namespace Lab16
                 item.RemoveOffered();
                 string path = $@"C:\Users\vinog\source\repos\Lab16\Lab16\bin\Debug\Магазины\{item.Name}";
                 Directory.CreateDirectory(path);
-                
                 serializator.Serialize(item, $@"{path}\{item.Name}___{DateTime.Now.Day}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}", journal);
             }
 
@@ -89,9 +107,8 @@ namespace Lab16
             Random rd = new Random();
             try
             {
-                for (int i = 0; i < 6; i++)
-                for (int j = 0; j < 4; j++)
-                    list[i].Remove(list[i][rd.Next(list[i].Count - 1)]);
+                foreach (var t in list)
+                        t.Remove(t[rd.Next(t.Count - 1)]);
             }
             catch (Exception e)
             {
@@ -100,7 +117,6 @@ namespace Lab16
                 for (int i = 0; i < Console.WindowWidth; i++)
                 {
                     Console.Write($"|");
-                    Thread.Sleep(2);
                 }
                 foreach (var item in list)
                     FillCollection(item);
@@ -177,6 +193,7 @@ namespace Lab16
                     break;
                 case "2":
                     Markerts();//Создаем новые магазины
+                   
                     break;
                 default:
                     Console.WriteLine("Выбрано неверный вариант");
@@ -184,8 +201,7 @@ namespace Lab16
                     break;
 
             }
-            foreach (var item in list)
-                IncludeDependences(item);
+            
 
         }
 
