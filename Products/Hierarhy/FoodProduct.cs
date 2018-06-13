@@ -16,25 +16,21 @@ namespace Products
             set => _percentDiscount = value;
         }
 
-        public bool ProductLifeIsDead
-        {
-            get => StorageLife == 0;
-            set => throw new NotImplementedException();
-        }
+        public bool ProductLifeIsDead => StorageLife == 0;
 
         public DateTime DateProduction
         {
             get => _dateProduction;
-            set => _dateProduction = value;
+            private set => _dateProduction = value;
         }
 
         public int StorageLife
         {
             get => _storageLife;
-            set => _storageLife = value;
+            private set => _storageLife = value;
         }
 
-        public FoodProduct():base()
+        protected FoodProduct():base()
         {
 
         }
@@ -44,10 +40,10 @@ namespace Products
             StorageLife = storageLife;
         }
 
-        public void ChangeProduct(string name,int price,int storage)
+        public virtual void ChangeProduct(string name,int price,int storage)
         {
-            base.ChangeProduct(name,price);
             StorageLife = storage;
+            base.ChangeProduct(name,price);
         }
 
 
@@ -64,7 +60,6 @@ namespace Products
         {
             if (StorageLife == 0)
             {
-                ProductLifeIsDead = true;
                 return;
             }
             else

@@ -15,19 +15,14 @@ namespace Products
             _length = length;
         }
 
-        public IndustrialProduct(string v) : base()
-        {
 
-        }
+        protected IndustrialProduct(){}
 
-        protected IndustrialProduct()
+        public virtual void ChangeProduct(string name,int price,int storage,int weight,int length)
         {
-            throw new NotImplementedException();
-        }
-
-        public void ChangeProduct()
-        {
-            
+            this._weight = weight;
+            this._length = length;
+            base.ChangeProduct(name,price,storage);
         }
         public override string ToString() => base.ToString() + $"Вес продукта:{_weight}\nДлина продукта:{_length}\n";
     }

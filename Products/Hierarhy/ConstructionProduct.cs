@@ -8,7 +8,7 @@ namespace Products
         private string _material;
         private string _typeMaterial;
 
-        public ConstructionProduct() : base()
+        private ConstructionProduct() : base()
         {
 
         }
@@ -18,17 +18,17 @@ namespace Products
             _material = material;
             _typeMaterial = typeMaterial;
         }
-        public void MakeDiscount()
+
+        public  void ChangeProduct(string name,int price,int storage,int weight,int length,string material,string _type)
         {
-            throw new NotImplementedException();
+            _material = material;
+            _typeMaterial = _type;
+            base.ChangeProduct(name, price);
         }
 
         public override string ToString() => base.ToString() + $"Материал {_material}\nТип материала{_typeMaterial}\n";
 
-        public void IncreasePrice()
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 
 }

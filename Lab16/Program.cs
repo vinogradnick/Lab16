@@ -67,6 +67,17 @@ namespace Lab16
             }
         }
 
+        public T Change<T>(T value)
+        {
+            switch (value.GetType())
+            {
+                case Product product:
+                    break;
+              
+            }
+           
+        }
+
         public static void Actions(MyNewCollection collection)
         {
             collection.Print();
@@ -82,6 +93,9 @@ namespace Lab16
                     {
                         int index = InputValidator.InputPositive();
                         Product product = collection[index];
+                        string name = Console.ReadLine();
+                        string price 
+                        product.ChangeProduct();
                         collection.ChangeProduct(index,product);
                     }
                     catch (Exception e)
