@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Validator;
 
 namespace Products
 {
@@ -63,10 +64,10 @@ namespace Products
             return p1.Price > p2.Price ? 1 : (p1.Price < p2.Price ? -1 : 0);
         }
 
-        public virtual void ChangeProduct(string name,double price)
+        public virtual void ChangeProduct()
         {
-            Name = name;
-            Price = price;
+           Name = Console.ReadLine();
+           Price = InputValidator.InputPositive();
         }
 
         

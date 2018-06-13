@@ -20,67 +20,74 @@ namespace Lab16
     {
         static Serializator serializator = new Serializator();
         static Journal journal = new Journal();
-        static List<MyNewCollection> list = new List<MyNewCollection>();
+        static MyCollection<MyNewCollection> list = new MyCollection<MyNewCollection>();
         static void Main(string[] args)
         {
             Startmenu();
             GetMarket(Select());
         }
-
+        /// <summary>
+        /// Выбор магазина коллекции по индексу элемента
+        /// </summary>
+        /// <returns></returns>
         public static MyNewCollection Select()
         {
             try
             {
                 int index = InputValidator.InputFromTO(0,list.Count);
-
                 return list[index];
             }
             catch (Exception e)
             {
                 Console.WriteLine("Данный магазин нельзя получить");
-                
             }
 
             return Select();
         }
-
+        /// <summary>
+        /// Изменение продукта по индексу элемента 
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
         public static Product Change(Product product)
         {
-            Console.WriteLine("Введите название продукта ");
-            string name = Console.ReadLine();
-            Console.WriteLine("Введите цену продукта");
-            int price = InputValidator.InputPositive();
-            product.ChangeProduct(name,price);
+             product.ChangeProduct();
             return product;
         }
-
+        /// <summary>
+        /// Сохранение данных магазинов 
+        /// </summary>
+        public static void Save()
+        {
+            serializator.SerializeAllMarkets(list, $@"C:\Users\vinog\source\repos\Lab16\Lab16\bin\Debug\Stores\Магазин_{DateTime.Now.Hour}_{DateTime.Now.Minute}");
+            serializator.SaveJournal(journal);
+        }
         /// <summary>
         /// Получить магазин
         /// </summary>
         /// <param name="collection"></param>
-        private static void GetMarket(MyNewCollection collection)
-        {
-           
-            CollectionAction(collection);
-        }
+        private static void GetMarket(MyNewCollection collection) => CollectionAction(collection);
+
         /// <summary>
         /// Работа с магазином
         /// </summary>
         /// <param name="collection"></param>
         private static void CollectionAction(MyNewCollection collection)
         {
+            Save();
             Console.WriteLine("Выбран магазин "+collection.Name);
             collection.Print();
             Console.WriteLine("1-Работа с продуктами");
             Console.WriteLine("2-Очистить магазин");
             Console.WriteLine("3-Добавить продукты в магазин");
+            Console.WriteLine("4-Вернуться назад");
+          
             switch (Console.ReadLine())
             {
                 case "1":
                     Actions(collection);
                     break;
                 case "2":
-                    
                     collection.Clear();
                     Console.WriteLine("Коллекция была очищена");
                     CollectionAction(collection);
@@ -89,6 +96,7 @@ namespace Lab16
                     FillCollection(collection);
                     break;
                 case "4":
+                    Save();
                     Startmenu();
                     break;
                 default:
@@ -106,22 +114,27 @@ namespace Lab16
         /// <param name="collection"></param>
         public static void Actions(MyNewCollection collection)
         {
+            Save();
             collection.Print();
-            Console.WriteLine("1- Печать товара");
-            Console.WriteLine("2- Сортировка товара по цене");
-            Console.WriteLine("3- Удалить товар");
-            Console.WriteLine("4 -Изменить товар");
-
+            Console.WriteLine("1-Добавить продукт");
+            Console.WriteLine("2-Сортировка товара по цене");
+            Console.WriteLine("3-Удалить товар");
+            Console.WriteLine("4-Изменить товар");
+            Console.WriteLine("5-Печать всех продуктов класса FoodProduct");
+            Console.WriteLine("6-Вернуться назад");
             switch (Console.ReadLine())
             {
                 case "1":
-                    
+                    Product el = Generator.Generator.generate()[0];
+                    Console.WriteLine(el.ToString());
+                    collection.Add(el);
                     Actions(collection);
                     break;
                 case "2":
                     collection.SortByPrice();
                     collection.Print();
                     Actions(collection);
+                    serializator.SaveJournal(journal);
                     break;
                 case "3":
                     try
@@ -142,8 +155,9 @@ namespace Lab16
                     {
                      Console.WriteLine("Введите индекс элемента");
                         int index = InputValidator.InputFromTO(0, collection.Count);
+                        Console.WriteLine(collection[index].ToString());
                         Product p = Change(collection[index]);
-                        collection[index].ChangeProduct(p.Name,p.Price);
+                        collection.ChangeProduct(collection[index]);
                         Actions(collection);
                     }
                     catch (Exception e)
@@ -152,6 +166,11 @@ namespace Lab16
                     }
                     break;
                 case "5":
+                    collection.PrintAllFood();
+                    Actions(collection);
+                    break;
+                case "6":
+                    Save();
                     Console.WriteLine("Выберите магазин");
                     for (var i = 0; i < list.Count; i++)
                     {
@@ -175,11 +194,14 @@ namespace Lab16
         /// </summary>
         public static void Markerts()
         {
-            Random random = new Random();
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 3; i++)
                 list.Add(new MyNewCollection(Generator.Generator.gen()));
-            foreach (var item in list)
-                IncludeDependences(item);
+            foreach (MyNewCollection item in list)
+            {
+                IncludeDependences(item);//Включение подписки на события
+                FillCollection(item);//Заполнение коллекции
+            }
+
             for (var i = 0; i < list.Count; i++)
             {
                 var item = list[i];
@@ -210,18 +232,16 @@ namespace Lab16
                 coll.Add(prod[i]);
             }
         }
-       
-        
-
+        /// <summary>
+        /// 
+        /// </summary>
         public static void Startmenu()
         {
             Console.WriteLine("Открыть уже созданые магазины 1-да, 2-нет");
             switch (Console.ReadLine())
             {
                 case "1":
-                    FilesInDirectory(@"C:\Users\vinog\source\repos\Lab16\Lab16\bin\Debug\Stores");
-                    Console.WriteLine("Введите путь для получения данных");
-                    list = serializator.Deserializator(@Console.ReadLine());//Получаем данные из файла
+                    list = serializator.Deserializator(FilesInDirectory(@"C:\Users\vinog\source\repos\Lab16\Lab16\bin\Debug\Stores"));//Получаем данные из файла
                     for (int i = 0; i < list.Count; i++)
                         IncludeDependences(list[i]);
                     break;
@@ -236,13 +256,21 @@ namespace Lab16
             }
             
         }
-
-        private static void FilesInDirectory(string path)
+        /// <summary>
+        /// Получить файл пути из директории
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private static string FilesInDirectory(string path)
         {
-            foreach (var file in Directory.GetFiles(path))
+            var files = Directory.GetFiles(path);
+            for (var index = 0; index < files.Length; index++)
             {
-                Console.WriteLine(file);
+                var file = files[index];
+                Console.WriteLine($"[{index}] = {file}");
             }
+            Console.WriteLine("Выберите элемент");
+            return files[InputValidator.InputFromTO(0, files.Length)];
         }
     }
     

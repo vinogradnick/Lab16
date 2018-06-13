@@ -1,4 +1,5 @@
 ﻿using System;
+using Validator;
 
 namespace Products
 {
@@ -19,15 +20,13 @@ namespace Products
         {
 
         }
-
-        protected IndustrialProduct()
+        public override  void ChangeProduct()
         {
-            throw new NotImplementedException();
-        }
-
-        public void ChangeProduct()
-        {
-            
+             base.ChangeProduct();
+            Console.WriteLine("Введите вес продукта");
+            _weight = InputValidator.InputPositive();
+            Console.WriteLine("Введите длину продукта");
+            _length = InputValidator.InputPositive();
         }
         public override string ToString() => base.ToString() + $"Вес продукта:{_weight}\nДлина продукта:{_length}\n";
     }

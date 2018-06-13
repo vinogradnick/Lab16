@@ -20,7 +20,7 @@ namespace Serializatior
 
         }
 
-        public void SerializeAllMarkets(List<MyNewCollection> list,string path)
+        public void SerializeAllMarkets(MyCollection<MyNewCollection> list,string path)
         {
             BinaryFormatter formatter = new BinaryFormatter();
             try
@@ -214,14 +214,14 @@ namespace Serializatior
                 throw;
             }
         }
-        public List<MyNewCollection> Deserializator(string file)
+        public MyCollection<MyNewCollection> Deserializator(string file)
         {
             BinaryFormatter formatter = new BinaryFormatter();
 
             try
             {
                 FileStream fs = new FileStream(file, FileMode.OpenOrCreate);
-                List<MyNewCollection> collection = (List<MyNewCollection>)formatter.Deserialize(fs);
+                MyCollection<MyNewCollection> collection = (MyCollection<MyNewCollection>)formatter.Deserialize(fs);
                 fs.Close();
                 fs.Dispose();
                 return collection;

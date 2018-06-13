@@ -1,4 +1,5 @@
 ﻿using System;
+using Validator;
 
 namespace Products
 {
@@ -9,31 +10,26 @@ namespace Products
         private int _storageLife;
         private double _percentDiscount;
         public static event Discounter DiscountChange;
-
         public double PercentDiscount
         {
             get => _percentDiscount;
             set => _percentDiscount = value;
         }
-
         public bool ProductLifeIsDead
         {
             get => StorageLife == 0;
             set => throw new NotImplementedException();
         }
-
         public DateTime DateProduction
         {
             get => _dateProduction;
             set => _dateProduction = value;
         }
-
         public int StorageLife
         {
             get => _storageLife;
             set => _storageLife = value;
         }
-
         public FoodProduct():base()
         {
 
@@ -43,20 +39,16 @@ namespace Products
             DateProduction = dateProduction;
             StorageLife = storageLife;
         }
-
-        public void ChangeProduct(string name,int price,int storage)
+        /// <summary>
+        /// Изменение в продукте
+        /// </summary>
+        public override void ChangeProduct()
         {
-            base.ChangeProduct(name,price);
-            StorageLife = storage;
+            base.ChangeProduct();
+            Console.WriteLine("Введите срок годности продукта");
+            StorageLife = InputValidator.InputPositive();
         }
-
-
-        
-        public void OnDiscountChange(DiscountHandler handler)
-        {
-            DiscountChange?.Invoke(this, handler);
-        }
-
+        public void OnDiscountChange(DiscountHandler handler) => DiscountChange?.Invoke(this, handler);
 
         public override string ToString() => base.ToString()+$"Дата производства:{DateProduction}\nСрок годности:{StorageLife}\nСкидка на товар:{PercentDiscount}\nПродукт испортился:{ProductLifeIsDead}\n";
 

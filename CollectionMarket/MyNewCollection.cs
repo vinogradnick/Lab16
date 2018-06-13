@@ -9,9 +9,9 @@ using Products;
 namespace CollectionMarket
 {
     [Serializable]
-    public class MyNewCollection : MyCollection
+    public class MyNewCollection : MyCollection<Product>
     {
-        public string Name { get; set; }
+        public string Name { get; private set; }
         public event CollectionHandler CollectionProductChanged;
         public event Discounter DiscountProductIsEnd;
         public event CollectionHandler CollectionProductCountChanged;
@@ -19,10 +19,12 @@ namespace CollectionMarket
         public MyNewCollection(string name):base() => Name = name;
 
         protected virtual void OnCollectionProductChanged(CollectionHandlerArgs args) => CollectionProductChanged?.Invoke(this, args);
-
+        /// <summary>
+        /// Добавление товаров
+        /// </summary>
+        /// <param name="value"></param>
         public void Add(Product value)
         {
-            
             OnCollectionProductCountChanged(new CollectionHandlerArgs(this.Name,"Товар добавлен",value));
             base.Add(value);
         }
@@ -49,8 +51,8 @@ namespace CollectionMarket
         {
             Console.WriteLine("");
             Console.WriteLine($"{this.Name} Количество продуктов{this.Count}\n");
-            foreach (var item in this)
-                Console.WriteLine(item.ToString());
+            for (int index = 0; index < this.Count; index++)
+                Console.WriteLine($"[{index}] {this[index].ToString()}");
         }
         public  void Remove(Product product)
         {
@@ -61,10 +63,7 @@ namespace CollectionMarket
         public void OffsProduct(Product product)
         {
             if (this.Contains(product))
-            {
-                product.isOffed = true;
                 OnCollectionProductChanged(new CollectionHandlerArgs(this.Name, "Списание товара", product));
-            }
             else
                 Console.WriteLine("Данный продукт нельзя списать, если его нет");
         }
@@ -86,26 +85,67 @@ namespace CollectionMarket
             }
         }
 
-        public void ChangeProduct(int index,Product product)
+        private void Remove(FoodProduct product)
         {
-            base[index] = product;
-            OnCollectionProductChanged(new CollectionHandlerArgs(this.Name,"изменение продукта",product));
-                Console.WriteLine("Данный продукт нельзя изменить, если его нет");
+            OnCollectionProductCountChanged(new CollectionHandlerArgs(this.Name, "Удаление товара", product));
+            base.Remove(product);
         }
 
+        public void ChangeProduct(Product product)
+        {
+            try
+            {
+                array[this.GetIndex(product)] = product;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Продукта нет в списке");
+            }
+            OnCollectionProductChanged(new CollectionHandlerArgs(this.Name,"Изменение продукта",product));
+            Console.WriteLine("Данный продукт нельзя изменить, если его нет");
+        }
+
+        public int GetIndex(Product p)
+        {
+            
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (p == array[i])
+                    return i;
+            }
+
+            return -1;
+        }
+
+       
+        /// <summary>
+        /// Сортировка по цене
+        /// </summary>
         public void SortByPrice()
         {
-            var sorted = from product in this orderby product.Price select product;
-            
+            try
+            {
+                IOrderedEnumerable<Product> sorted = from product in array orderby product.Price select product;
+                this.array = sorted.ToArray();
+            }
+            catch (Exception e)
+            {
+               Console.WriteLine("Невозможно отсортировать объекты которых нет");
+            }
+          
         }
-       
-        
-        protected virtual void OnDiscountProductIsEnd(object obj, DiscountHandler evehandler) => DiscountProductIsEnd?.Invoke(obj, evehandler);
-
-        protected virtual void OnCollectionProductCountChanged(CollectionHandlerArgs args)
+        /// <summary>
+        /// Вывод на экран всей еды
+        /// </summary>
+        public void PrintAllFood()
         {
-            CollectionProductCountChanged?.Invoke(this, args);
+            var item = from product in array where product.GetType() == typeof(FoodProduct) select product;
+            foreach (var el in item)
+                Console.WriteLine(el.ToString());
         }
+        protected virtual void OnDiscountProductIsEnd(object obj, DiscountHandler evehandler) => DiscountProductIsEnd?.Invoke(obj, evehandler);
+        protected virtual void OnCollectionProductCountChanged(CollectionHandlerArgs args) => CollectionProductCountChanged?.Invoke(this, args);
     }
 
     public delegate void CollectionHandler(object sender, CollectionHandlerArgs args);

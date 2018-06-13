@@ -8,19 +8,22 @@ namespace Products
         private string _material;
         private string _typeMaterial;
 
-        public ConstructionProduct() : base()
-        {
-
-        }
+        
 
         public ConstructionProduct(string name, int price, string material, string typeMaterial,int weight,int length,DateTime timeprod,int life) : base(name,price,weight,length,timeprod,life)
         {
             _material = material;
             _typeMaterial = typeMaterial;
         }
-        public void MakeDiscount()
+
+
+        public override void ChangeProduct()
         {
-            throw new NotImplementedException();
+            base.ChangeProduct();
+            Console.WriteLine("Введите материал");
+            _material = Console.ReadLine();
+            Console.WriteLine("Введите тип материал");
+            _typeMaterial = Console.ReadLine();
         }
 
         public override string ToString() => base.ToString() + $"Материал {_material}\nТип материала{_typeMaterial}\n";
