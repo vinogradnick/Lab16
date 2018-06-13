@@ -232,6 +232,23 @@ namespace Serializatior
                 throw;
             }
         }
+        public MyNewCollection Deserialize(string file)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
 
+            try
+            {
+                FileStream fs = new FileStream(file, FileMode.OpenOrCreate);
+                MyNewCollection collection = (MyNewCollection)formatter.Deserialize(fs);
+                fs.Close();
+                fs.Dispose();
+                return collection;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
     }
 }

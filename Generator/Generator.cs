@@ -16,12 +16,11 @@ namespace Generator
         private FoodProduct[] food;
         private IndustrialProduct[] insIndustrialProducts;
         private ConstructionProduct[] constructionProduct;
-        public static int count = 5;
         static Faker bogus = new Bogus.Faker("ru");
         
         public Generator()
         {
-            count = rd.Next(1, 50);
+           int  count = 3;
             food = new FoodProduct[count];
             insIndustrialProducts=new IndustrialProduct[count];
             constructionProduct = new ConstructionProduct[count];
@@ -30,13 +29,13 @@ namespace Generator
 
         public  static List<Product> generate()
         {
-            
+            int count = 3;
             
             List<Product> prdProducts=new List<Product>();
             for (int i = 0; i < count; i++)
                 prdProducts.Add(new ConstructionProduct(bogus.Commerce.ProductName()+" код:"+Path.GetRandomFileName().Substring(0,5), rd.Next(100, 15000), bogus.Commerce.ProductMaterial(),
                     bogus.Commerce.ProductMaterial(), rd.Next(1, 50), rd.Next(1, 50), DateTime.Now, 900));
-            for (int i = 0; i < count+20; i++)
+            for (int i = 0; i < count; i++)
                 prdProducts.Add(new FoodProduct(bogus.Commerce.ProductName() + " код:" + Path.GetRandomFileName().Substring(0, 5), rd.Next(100, 2000), DateTime.Now, rd.Next(5, 20)));
 
             for (int i = 0; i < count; i++)

@@ -52,7 +52,7 @@ namespace CollectionMarket
             foreach (var item in this)
                 Console.WriteLine(item.ToString());
         }
-        public void Remove(Product product)
+        public  void Remove(Product product)
         {
             OnCollectionProductCountChanged(new CollectionHandlerArgs(this.Name,"Удаление товара",product));
             base.Remove(product);
@@ -100,7 +100,8 @@ namespace CollectionMarket
             foreach (var item in sorted)
                 base.Add(item);
         }
-
+       
+        
         protected virtual void OnDiscountProductIsEnd(object obj, DiscountHandler evehandler) => DiscountProductIsEnd?.Invoke(obj, evehandler);
 
         protected virtual void OnCollectionProductCountChanged(CollectionHandlerArgs args)

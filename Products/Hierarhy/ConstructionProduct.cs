@@ -5,8 +5,8 @@ namespace Products
     [Serializable]
     public class ConstructionProduct :IndustrialProduct
     {
-        public string Material;
-        public string TypeMaterial;
+        private string _material;
+        private string _typeMaterial;
 
         public ConstructionProduct() : base()
         {
@@ -15,15 +15,15 @@ namespace Products
 
         public ConstructionProduct(string name, int price, string material, string typeMaterial,int weight,int length,DateTime timeprod,int life) : base(name,price,weight,length,timeprod,life)
         {
-            Material = material;
-            TypeMaterial = typeMaterial;
+            _material = material;
+            _typeMaterial = typeMaterial;
         }
         public void MakeDiscount()
         {
             throw new NotImplementedException();
         }
 
-        public override string ToString() => base.ToString() + $"Материал {Material}\nТип материала{TypeMaterial}\n";
+        public override string ToString() => base.ToString() + $"Материал {_material}\nТип материала{_typeMaterial}\n";
 
         public void IncreasePrice()
         {

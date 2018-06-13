@@ -11,6 +11,7 @@ using CollectionMarket;
 using Products;
 using Serializatior;
 using Generator;
+using Validator;
 
 
 namespace Lab16
@@ -20,57 +21,114 @@ namespace Lab16
         static Serializator serializator = new Serializator();
         static Journal journal = new Journal();
         static List<MyNewCollection> list = new List<MyNewCollection>();
-        static void Main(string[] args) => Game();
+        static void Main(string[] args)
+        {
+            Game();
+        }
 
-        public static void Game()
+        public static  void Game()
         {
             Startmenu();
-            int count = 0;
-            bool repeat = false;
-            while (!repeat)
-            {
-                Console.Write("Сколько дней вы хотите пропустить :");
-                count = Validator.InputValidator.InputPositive();
-                for (int i = 0; i <= count; i++)
-                {
-                    NextDay();
-                    SaveData();
-                    Console.WriteLine($"День {i}");
-                }
-                serializator.SaveJournal(journal);//Сохранение информации о товаре в журнале
-                Console.Write("Для выхода нажмите <R> ");
-                if (Console.ReadLine() == "R") repeat = true;
-            }
-            Console.WriteLine(count+" день работы был завершнен");
-
-            
-            Menu();//Вызов меню
-            Choise();//Выбор вариантов
-           
+            NextDay();
+            SaveData();
+            int index = InputValidator.InputPositive();
+            GetMarket(list[index]);
 
 
         }
+
+        public static void GetMarket(MyNewCollection collection)
+        {
+            Console.WriteLine("Выбран магазин "+collection.Name);
+            collection.Print();
+            Console.WriteLine("1-Работа с продуктами");
+            Console.WriteLine("2-Очистить магазин");
+            Console.WriteLine("3-Добавить продукты в магазин");
+            CollectionAction(collection);
+        }
+
+        public static void CollectionAction(MyNewCollection collection)
+        {
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    Actions(collection);
+                    break;
+                case "2":
+                    collection.Clear();
+                    break;
+                case "3":
+                    FillCollection(collection);
+                    break;
+                default:
+                    Console.WriteLine("Вы выбрали неверный ответ");
+                    CollectionAction(collection);
+                    break;
+            }
+        }
+
+        public static void Actions(MyNewCollection collection)
+        {
+            collection.Print();
+            Console.WriteLine("1- Выбрать товар");
+            Console.WriteLine("2- Сортировка товара по цене");
+            Console.WriteLine("3- Удалить товар");
+
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    Console.WriteLine("Введите индекс товара");
+                    try
+                    {
+                        int index = InputValidator.InputPositive();
+                        Product product = collection[index];
+                        collection.ChangeProduct(index,product);
+                    }
+                    catch (Exception e)
+                    {
+                       Console.WriteLine("Товара нет в списке");
+                        
+                    }
+                    
+                    Actions(collection);
+                    break;
+                case "2":
+                    collection.SortByPrice();
+                    collection.Print();
+                    Actions(collection);
+                    break;
+                case "3":
+                    try
+                    {
+                        int index = InputValidator.InputPositive();
+                        Product product = collection[index];
+                        collection.Remove(product);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Товара нельзя удалить");
+                    }
+                    break;
+                default:
+                    Actions(collection);
+                    break;
+            }
+        }
+
+       
         /// <summary>
         /// Генерация магазинов
         /// </summary>
         public static void Markerts()
         {
             Random random = new Random();
-            for (int i = 0; i < random.Next(10,20); i++)
-            {
+            for (int i = 0; i < 2; i++)
                 list.Add(new MyNewCollection(Generator.Generator.gen()));
-            }
-
             foreach (var item in list)
                 IncludeDependences(item);
-
-
             foreach (var item in list)
-            {
                 Console.WriteLine($"{item.Name} Количество продуктов:{item.Count}");
-            }
         }
-
         public static void SaveData()
         {
             foreach (MyNewCollection item in list)
@@ -99,6 +157,7 @@ namespace Lab16
                 item.Work();
             Console.WriteLine("Перейти на следующий день час работы");
         }
+        
         /// <summary>
         /// Удаление элементов из магазина
         /// </summary>
@@ -157,7 +216,6 @@ namespace Lab16
             Console.WriteLine("2-Посмотреть продукты");
             Console.WriteLine("3-Посмотреть журнал событий");
             Console.WriteLine("4-Выбрать магазин");
-            Console.WriteLine("5-Выбрать магазин");
             
         }
 
@@ -176,10 +234,7 @@ namespace Lab16
             }
         }
 
-        public void ChoiseDirectory()
-        {
-            
-        }
+    
 
         public static void Startmenu()
         {
@@ -193,7 +248,6 @@ namespace Lab16
                     break;
                 case "2":
                     Markerts();//Создаем новые магазины
-                   
                     break;
                 default:
                     Console.WriteLine("Выбрано неверный вариант");

@@ -3,11 +3,36 @@
 namespace Products
 {
     [Serializable]
-    public class FoodProduct : Product,IDiscount,ITimeProductChecker
+    public class FoodProduct : Product,IDiscount
     {
-        public DateTime DateProduction { get; set; }
+        private DateTime _dateProduction;
+        private int _storageLife;
+        private double _percentDiscount;
+        public static event Discounter DiscountChange;
 
-        public int StorageLife { get; set; }
+        public double PercentDiscount
+        {
+            get => _percentDiscount;
+            set => _percentDiscount = value;
+        }
+
+        public bool ProductLifeIsDead
+        {
+            get => StorageLife == 0;
+            set => throw new NotImplementedException();
+        }
+
+        public DateTime DateProduction
+        {
+            get => _dateProduction;
+            set => _dateProduction = value;
+        }
+
+        public int StorageLife
+        {
+            get => _storageLife;
+            set => _storageLife = value;
+        }
 
         public FoodProduct():base()
         {
@@ -17,15 +42,16 @@ namespace Products
         {
             DateProduction = dateProduction;
             StorageLife = storageLife;
-            PredictionTime = VirtualTimer.Time;
+        }
+
+        public void ChangeProduct(string name,int price,int storage)
+        {
+            base.ChangeProduct(name,price);
+            StorageLife = storage;
         }
 
 
-        public static event Discounter DiscountChange;
-        public double PercentDiscount { get; set; }
-
-        public bool ProductLifeIsDead => StorageLife == 0;
-
+        
         public void OnDiscountChange(DiscountHandler handler)
         {
             DiscountChange?.Invoke(this, handler);
@@ -34,13 +60,11 @@ namespace Products
 
         public override string ToString() => base.ToString()+$"Дата производства:{DateProduction}\nСрок годности:{StorageLife}\nСкидка на товар:{PercentDiscount}\nПродукт испортился:{ProductLifeIsDead}\n";
 
-        
-        public int PredictionTime { get; set; }
-
         public void Check()
         {
             if (StorageLife == 0)
             {
+                ProductLifeIsDead = true;
                 return;
             }
             else
