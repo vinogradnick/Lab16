@@ -121,7 +121,7 @@ namespace CollectionMarket
                 this.Product = product;
             }
 
-            public override string ToString() => $"Название:{this.Message}\nТип изменения:{this.Discount}\nСрок годности:{StorageLife}\nОбъект:{this.Product.ToString()}";
+            public override string ToString() => $"Тип изменения:{this.Message}\nСрок годности:{StorageLife}\nОбъект:{this.Product.ToString()}";
         }
 
     }

@@ -63,11 +63,12 @@ namespace Products
             return p1.Price > p2.Price ? 1 : (p1.Price < p2.Price ? -1 : 0);
         }
 
-        public virtual void ChangeProduct(string name,int price)
+        public virtual void ChangeProduct(string name,double price)
         {
             Name = name;
             Price = price;
         }
+
         
     }
 

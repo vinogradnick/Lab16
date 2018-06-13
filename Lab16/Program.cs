@@ -23,72 +23,98 @@ namespace Lab16
         static List<MyNewCollection> list = new List<MyNewCollection>();
         static void Main(string[] args)
         {
-            Game();
-        }
-
-        public static  void Game()
-        {
             Startmenu();
-            NextDay();
-            SaveData();
-            int index = InputValidator.InputPositive();
-            GetMarket(list[index]);
-
-
+            GetMarket(Select());
         }
 
-        public static void GetMarket(MyNewCollection collection)
+        public static MyNewCollection Select()
+        {
+            try
+            {
+                int index = InputValidator.InputFromTO(0,list.Count);
+
+                return list[index];
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Данный магазин нельзя получить");
+                
+            }
+
+            return Select();
+        }
+
+        public static Product Change(Product product)
+        {
+            Console.WriteLine("Введите название продукта ");
+            string name = Console.ReadLine();
+            Console.WriteLine("Введите цену продукта");
+            int price = InputValidator.InputPositive();
+            product.ChangeProduct(name,price);
+            return product;
+        }
+
+        /// <summary>
+        /// Получить магазин
+        /// </summary>
+        /// <param name="collection"></param>
+        private static void GetMarket(MyNewCollection collection)
+        {
+           
+            CollectionAction(collection);
+        }
+        /// <summary>
+        /// Работа с магазином
+        /// </summary>
+        /// <param name="collection"></param>
+        private static void CollectionAction(MyNewCollection collection)
         {
             Console.WriteLine("Выбран магазин "+collection.Name);
             collection.Print();
             Console.WriteLine("1-Работа с продуктами");
             Console.WriteLine("2-Очистить магазин");
             Console.WriteLine("3-Добавить продукты в магазин");
-            CollectionAction(collection);
-        }
-
-        public static void CollectionAction(MyNewCollection collection)
-        {
             switch (Console.ReadLine())
             {
                 case "1":
                     Actions(collection);
                     break;
                 case "2":
+                    
                     collection.Clear();
+                    Console.WriteLine("Коллекция была очищена");
+                    CollectionAction(collection);
                     break;
                 case "3":
                     FillCollection(collection);
+                    break;
+                case "4":
+                    Startmenu();
                     break;
                 default:
                     Console.WriteLine("Вы выбрали неверный ответ");
                     CollectionAction(collection);
                     break;
             }
+            CollectionAction(collection);
+
         }
 
+        /// <summary>
+        /// Действие над товаром
+        /// </summary>
+        /// <param name="collection"></param>
         public static void Actions(MyNewCollection collection)
         {
             collection.Print();
-            Console.WriteLine("1- Выбрать товар");
+            Console.WriteLine("1- Печать товара");
             Console.WriteLine("2- Сортировка товара по цене");
             Console.WriteLine("3- Удалить товар");
+            Console.WriteLine("4 -Изменить товар");
 
             switch (Console.ReadLine())
             {
                 case "1":
-                    Console.WriteLine("Введите индекс товара");
-                    try
-                    {
-                        int index = InputValidator.InputPositive();
-                        Product product = collection[index];
-                        collection.ChangeProduct(index,product);
-                    }
-                    catch (Exception e)
-                    {
-                       Console.WriteLine("Товара нет в списке");
-                        
-                    }
                     
                     Actions(collection);
                     break;
@@ -100,20 +126,48 @@ namespace Lab16
                 case "3":
                     try
                     {
-                        int index = InputValidator.InputPositive();
+                        Console.WriteLine("Введите индекс элемента");
+                        int index = InputValidator.InputFromTO(0, collection.Count);
                         Product product = collection[index];
                         collection.Remove(product);
+                        Actions(collection);
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Товара нельзя удалить");
+                        Console.WriteLine("Товар нельзя удалить");
                     }
                     break;
+                case "4":
+                    try
+                    {
+                     Console.WriteLine("Введите индекс элемента");
+                        int index = InputValidator.InputFromTO(0, collection.Count);
+                        Product p = Change(collection[index]);
+                        collection[index].ChangeProduct(p.Name,p.Price);
+                        Actions(collection);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Продукт нельзя изменить");
+                    }
+                    break;
+                case "5":
+                    Console.WriteLine("Выберите магазин");
+                    for (var i = 0; i < list.Count; i++)
+                    {
+                        var item = list[i];
+                        Console.WriteLine($"[{i}] {item.Name} Количество продуктов:{item.Count}");
+                    }
+                    GetMarket(Select());
+                    break;
                 default:
+                    Console.WriteLine("Выбран неверный элемент");
                     Actions(collection);
                     break;
+               
             }
         }
+        
 
        
         /// <summary>
@@ -126,63 +180,13 @@ namespace Lab16
                 list.Add(new MyNewCollection(Generator.Generator.gen()));
             foreach (var item in list)
                 IncludeDependences(item);
-            foreach (var item in list)
-                Console.WriteLine($"{item.Name} Количество продуктов:{item.Count}");
-        }
-        public static void SaveData()
-        {
-            foreach (MyNewCollection item in list)
+            for (var i = 0; i < list.Count; i++)
             {
-                item.RemoveOffered();
-                string path = $@"C:\Users\vinog\source\repos\Lab16\Lab16\bin\Debug\Магазины\{item.Name}";
-                Directory.CreateDirectory(path);
-                serializator.Serialize(item, $@"{path}\{item.Name}___{DateTime.Now.Day}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}", journal);
+                var item = list[i];
+                Console.WriteLine($"[{i}] {item.Name} Количество продуктов:{item.Count}");
             }
-
-            string save =
-                $@"C:\Users\vinog\source\repos\Lab16\Lab16\bin\Debug\Stores\Магазины_{DateTime.Now.Hour}_{
-                        DateTime.Now.Minute
-                    }_Количество_{list.Count}";
-            serializator.SerializeAllMarkets(list,save);
-            list = serializator.Deserializator(save);
-            MarkertsRemove();
-        }
-
-        public static void NextDay()
-        {
-            foreach (MyNewCollection item in list)
-                item.Print();
-
-            foreach (MyNewCollection item in list)
-                item.Work();
-            Console.WriteLine("Перейти на следующий день час работы");
         }
         
-        /// <summary>
-        /// Удаление элементов из магазина
-        /// </summary>
-        public static void MarkertsRemove()
-        {
-            Random rd = new Random();
-            try
-            {
-                foreach (var t in list)
-                        t.Remove(t[rd.Next(t.Count - 1)]);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Продукты кончились");
-                Console.WriteLine("Завозим продукты в магазин");
-                for (int i = 0; i < Console.WindowWidth; i++)
-                {
-                    Console.Write($"|");
-                }
-                foreach (var item in list)
-                    FillCollection(item);
-            }
-           
-
-        }
         /// <summary>
         /// Включение подписок на события
         /// </summary>
@@ -193,8 +197,6 @@ namespace Lab16
             collection.DiscountProductIsEnd += new Discounter(journal.ProductStorageLifeEnd);
             collection.CollectionProductCountChanged += new CollectionHandler(journal.CollectionProductCountChanged);
             FoodProduct.DiscountChange += new Discounter(journal.ProductDiscountChanged);
-            collection.Add(new IndustrialProduct("быдых", 100, 1000, 10, DateTime.Now, 20));
-           FillCollection(collection);
         }
         /// <summary>
         /// Заполненик коллекции продуктами
@@ -208,33 +210,8 @@ namespace Lab16
                 coll.Add(prod[i]);
             }
         }
-        public static void Menu()
-        {
-            
-            Console.WriteLine("Вас приветствует магазин продуктов");
-            Console.WriteLine("1-Выбрать файл с данными за определенные дни");
-            Console.WriteLine("2-Посмотреть продукты");
-            Console.WriteLine("3-Посмотреть журнал событий");
-            Console.WriteLine("4-Выбрать магазин");
-            
-        }
-
-        public static void Choise()
-        {
-            switch (Console.ReadLine())
-            {
-               case "1":
-                   
-                   break;
-                case "2":
-                    System.Diagnostics.Process.Start("Market.mdb");
-                    break;
-                case "3":
-                    break;
-            }
-        }
-
-    
+       
+        
 
         public static void Startmenu()
         {
@@ -245,6 +222,8 @@ namespace Lab16
                     FilesInDirectory(@"C:\Users\vinog\source\repos\Lab16\Lab16\bin\Debug\Stores");
                     Console.WriteLine("Введите путь для получения данных");
                     list = serializator.Deserializator(@Console.ReadLine());//Получаем данные из файла
+                    for (int i = 0; i < list.Count; i++)
+                        IncludeDependences(list[i]);
                     break;
                 case "2":
                     Markerts();//Создаем новые магазины
@@ -256,10 +235,9 @@ namespace Lab16
 
             }
             
-
         }
 
-        public static void FilesInDirectory(string path)
+        private static void FilesInDirectory(string path)
         {
             foreach (var file in Directory.GetFiles(path))
             {

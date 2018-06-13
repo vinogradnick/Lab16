@@ -88,7 +88,7 @@ namespace CollectionMarket
 
         public void ChangeProduct(int index,Product product)
         {
-            this[index] = product;
+            base[index] = product;
             OnCollectionProductChanged(new CollectionHandlerArgs(this.Name,"изменение продукта",product));
                 Console.WriteLine("Данный продукт нельзя изменить, если его нет");
         }
@@ -96,9 +96,7 @@ namespace CollectionMarket
         public void SortByPrice()
         {
             var sorted = from product in this orderby product.Price select product;
-            base.Clear();
-            foreach (var item in sorted)
-                base.Add(item);
+            
         }
        
         
